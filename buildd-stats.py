@@ -81,6 +81,9 @@ print '''
             border-top-color: white;
             border-bottom: 1px solid #DFDFDF;
         }
+        .stats thead th {
+            text-align: center;
+        }
         .stats th {
             font-weight: bold;
             padding: 7px 7px 8px;
@@ -215,7 +218,10 @@ print '''
                 } ];
 
             var options = {
-                xaxis: {mode: "time"},
+                xaxis: {
+                    mode: "time",
+                    minTickSize: [1, "day"],
+                    },
                 legend: { position: 'nw'},
                 yaxes: [
                     {
@@ -230,7 +236,10 @@ print '''
                 selection: {mode: "x"},
             };
             var options2 = {
-                xaxis: {mode: "time"},
+                xaxis: {
+                    mode: "time",
+                    minTickSize: [1, "day"],
+                    },
                 legend: { position: 'nw'},
                 yaxes: [{
                         min: 0,
@@ -247,7 +256,7 @@ print '''
             };
             var plot = $.plot("#placeholder", d, options);
             var plot2 = $.plot("#placeholder2", d2, options2);
-            var overview = $.plot("#overview", [d[0]], {
+            var overview = $.plot("#overview", [d[0], d[1]], {
                 xaxis: {
                     mode: "time",
                     minTickSize: [1, "year"],
@@ -388,19 +397,19 @@ print '''
     <h3>Statistics</h3>
 
     <table class="stats">
-    <thead><th>&nbsp;</th><th>All</th><th>Haskell</th><th>&nbsp;</th></thead>
+    <thead><th>&nbsp;</th><th>All</th><th colspan="2">Haskell</th></thead>
     <tbody>
     <tr><th># uploads:</th><td id="alluploads"/><td id="haskelluploads"/><td id="uploadsperc"/></tr>
     <tr><th>buildtime:</th><td id="allbuildtime"/><td id="haskellbuildtime"/><td id="buildtimeperc"/></tr>
     <tr><th>CO<sub>2</sub>:<sup>*</sup></th><td id="allco2"/><td id="haskellco2"/><td>&nbsp;</td></tr>
     </tbody>
     </table>
+    <div style="font-size:small; text-align:right">
+    <sup>*</sup>CO<sub>2</sub> production based on <a href="http://www.vertatique.com/average-power-use-server"><span id="wattage"></span> Watt</a> and <a href="http://www.carbonfund.org/how-we-calculate"><span id="kgco2perkwh"></span> kg CO<sub>2</sub>/kWh</a>.
+    </div>
     </td>
     </tr>
     </table>
-    <div style="font-size:small; text-align:right">
-    <sup>*</sup>: CO<sub>2</sub> production based on <a href="http://www.vertatique.com/average-power-use-server"><span id="wattage"></span> Watt</a> and <a href="http://www.carbonfund.org/how-we-calculate"><span id="kgco2perkwh"></span> kg CO<sub>2</sub>/kWh</a>.
-    </div>
     '''
 
 print '''
