@@ -1,5 +1,25 @@
 #!/usr/bin/python
 
+# (c) 2013 Joachim Breitner
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import cgi
 import cgitb; cgitb.enable()
 import psycopg2
@@ -352,7 +372,7 @@ print '''
     href="mailto:nomeata@debian.org">nomeata@debian.org</a>&gt;, and the source can
     be found in the Debian Haskell Group's <a
     href="http://darcs.debian.org/pkg-haskell/tools/buildd-stats.py">tools
-    repo</a>.
+    repo</a>. Improvements are welcome, especially with regard to the HTML styling.
     </p>
     <p>
     The graphs are generated with <a href="http://www.flotcharts.org/">Flot</a> version <span id="flotversion"></span>.
