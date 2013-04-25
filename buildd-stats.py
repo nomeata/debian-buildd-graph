@@ -138,7 +138,9 @@ print '''
                     // More than one minute
                     format = 'm';
                     timespan = (period / 60).toFixed(2);
-                }
+                } else {
+                    timespan = period.toFixed(2);
+		}
                  
                 /*
                 // Remove the s
@@ -305,12 +307,34 @@ print '''
                 var haskelluploads = sumup(d_haskell_pkgs);
                 $("#alluploads").text(alluploads);
                 $("#haskelluploads").text(haskelluploads);
-                $("#uploadsperc").text((haskelluploads/alluploads * 100).toFixed() + "%");
+		if (alluploads> 0) {
+			$("#uploadsperc").text((haskelluploads/alluploads * 100).toFixed() + "%");
+		} else {
+			$("#uploadsperc").text("\u2014");
+		}
+
                 var allbuildtime = sumup(d_buildtime);
                 var haskellbuildtime = sumup(d_haskell_buildtime);
                 $("#allbuildtime").text(timespanFormatter(allbuildtime));
                 $("#haskellbuildtime").text(timespanFormatter(haskellbuildtime));
-                $("#buildtimeperc").text((haskellbuildtime/allbuildtime * 100).toFixed() + "%");
+		if (allbuildtime > 0) {
+			$("#buildtimeperc").text((haskellbuildtime/allbuildtime * 100).toFixed() + "%");
+		} else {
+			$("#buildtimeperc").text("\u2014");
+		}
+
+		if (alluploads > 0) {
+			var allavgbuildtime = allbuildtime / alluploads
+                	$("#allavgbuildtime").text(timespanFormatter(allavgbuildtime));
+		} else {
+                	$("#allavgbuildtime").text("\u2014");
+		}
+		if (haskelluploads > 0) {
+			var haskellavgbuildtime = haskellbuildtime / haskelluploads
+                	$("#haskellavgbuildtime").text(timespanFormatter(haskellavgbuildtime));
+		} else {
+                	$("#haskellavgbuildtime").text("\u2014");
+		}
 
                 var wattage = 472; // http://www.vertatique.com/average-power-use-server
                 var kgco2perkwh = 0.5925; // http://www.carbonfund.org/how-we-calculate
@@ -401,6 +425,7 @@ print '''
     <tbody>
     <tr><th># uploads:</th><td id="alluploads"/><td id="haskelluploads"/><td id="uploadsperc"/></tr>
     <tr><th>buildtime:</th><td id="allbuildtime"/><td id="haskellbuildtime"/><td id="buildtimeperc"/></tr>
+    <tr><th>avg. buildtime:</th><td id="allavgbuildtime"/><td id="haskellavgbuildtime"/><td>&nbsp;</td></tr>
     <tr><th>CO<sub>2</sub>:<sup>*</sup></th><td id="allco2"/><td id="haskellco2"/><td>&nbsp;</td></tr>
     </tbody>
     </table>
