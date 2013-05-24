@@ -29,7 +29,9 @@ import re
 conn = psycopg2.connect("service=wanna-build")
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-DAYS_QUERY = '''SELECT (SELECT min(timestamp) FROM amd64_public.pkg_histor '1' day * generate_series(0, (SELECT extract(day from max(timestamp)-min(timestamp)) FROM amd64_public.pkg_history)::integer))'''
+ARCH = 'i386'
+
+DAYS_QUERY = '''SELECT (SELECT min(timestamp) FROM %(arch)s.pkg_histor '1' day * generate_series(0, (SELECT extract(day from max(timestamp)-min(timestamp)) FROM %(arch)s.pkg_history)::integer))''' % {'arch': ARCH}
 
 pattern =re.compile('^([-_a-zA-Z0-9]*)\s*.*pkg-haskell-maintainers@lists.alioth.debian.org.*$')
 pkgs = []
@@ -43,7 +45,7 @@ QUERY = '''
 		SELECT COUNT(*) as pkgs,
 		       timestamp :: date AS day,
                        sum(build_time) as total_build_time
-		FROM amd64_public.pkg_history
+		FROM %(arch)s_public.pkg_history
                 WHERE timestamp > '2010-01-01'
 		GROUP BY day
 		ORDER BY day
@@ -51,14 +53,17 @@ QUERY = '''
 		SELECT COUNT(*) as haskell_pkgs,
 		       timestamp :: date AS day,
 		       sum(build_time) as haskell_total_build_time
-		FROM amd64_public.pkg_history
-		WHERE package IN (%s)
+		FROM %(arch)s_public.pkg_history
+		WHERE package IN (%(pkgs)s)
                   AND timestamp > '2010-01-01'
 		GROUP BY day
 		ORDER BY day
 	)
 	SELECT *
-	FROM allp FULL OUTER JOIN haskell USING (day);''' % ",".join(map(lambda s: "'%s'"%s, pkgs))
+	FROM allp FULL OUTER JOIN haskell USING (day);''' % \
+	{ 'arch': ARCH,
+	  'pkgs': ",".join(map(lambda s: "'%s'"%s, pkgs)) }
+
 cur.execute(QUERY)
 
 print 'Content-Type: text/html\n\n'
@@ -104,7 +109,7 @@ print '''
     <script type="text/javascript">
         $(function() {
             function percFormatter(perc, axis) {
-                return perc.toFixed(axis.tickDecimals) + "%";
+                return perc.toFixed(axis.tickDecimals) + "%%";
             }
             function timespanFormatter(period, axis) {
                 var timespan = 1;
@@ -308,7 +313,7 @@ print '''
                 $("#alluploads").text(alluploads);
                 $("#haskelluploads").text(haskelluploads);
 		if (alluploads> 0) {
-			$("#uploadsperc").text((haskelluploads/alluploads * 100).toFixed() + "%");
+			$("#uploadsperc").text((haskelluploads/alluploads * 100).toFixed() + "%%");
 		} else {
 			$("#uploadsperc").text("\u2014");
 		}
@@ -318,7 +323,7 @@ print '''
                 $("#allbuildtime").text(timespanFormatter(allbuildtime));
                 $("#haskellbuildtime").text(timespanFormatter(haskellbuildtime));
 		if (allbuildtime > 0) {
-			$("#buildtimeperc").text((haskellbuildtime/allbuildtime * 100).toFixed() + "%");
+			$("#buildtimeperc").text((haskellbuildtime/allbuildtime * 100).toFixed() + "%%");
 		} else {
 			$("#buildtimeperc").text("\u2014");
 		}
@@ -396,7 +401,7 @@ print '''
     <h3>What is this?</h3>
     <p>
     This plots the number and buildtimes of uploads to the Debian buildd database
-    on architecture amd64, with special emphasis of packages by the Debian Haskell
+    on architecture %(arch)s, with special emphasis on packages by the Debian Haskell
     Group. The statistics below combine the data from the selected range; you can
     select ranges by dragging in the graphs, or by using the buttons below.
     </p>
@@ -435,7 +440,7 @@ print '''
     </td>
     </tr>
     </table>
-    '''
+	''' % { 'arch': ARCH }
 
 print '''
     </body>
