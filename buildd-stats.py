@@ -109,7 +109,7 @@ print '''
     <script type="text/javascript">
         $(function() {
             function percFormatter(perc, axis) {
-                return perc.toFixed(axis.tickDecimals) + "%%";
+                return perc.toFixed(axis.tickDecimals) + "%";
             }
             function timespanFormatter(period, axis) {
                 var timespan = 1;
