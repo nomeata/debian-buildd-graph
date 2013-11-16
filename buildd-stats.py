@@ -37,16 +37,17 @@ form = cgi.FieldStorage()
 pkgs_raw = form.getfirst('p', DEFAULT_P).replace(',',' ').split()
 
 # Replace e-mail addresses by packages
-pkgs = ['dummynametogetvalidpostgresqlevenifthislistisempty']
+pkgs = set(['dummynametogetvalidpostgresqlevenifthislistisempty'])
 pattern =re.compile('^([-_a-zA-Z0-9]*)\s*.*<(.*)>$')
 for p in pkgs_raw:
     if "@" in p:
         for line in file('/srv/buildd.debian.org/etc/Maintainers'):
             m = pattern.match(line)
             if m and m.group(2) == p:
-                pkgs.append(m.group(1))
+                pkgs.add(m.group(1))
     else:
-        pkgs.append(p)
+        pkgs.add(p)
+
 
 QUERY = '''
 	WITH allp AS (
