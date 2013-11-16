@@ -94,24 +94,10 @@ QUERY = '''
 
 cur.execute(QUERY, {'pkgs': tuple(pkgs) })
 
-d_pkgs = []
-d_selected_pkgs = []
-d_pkgs_perc = []
-d_buildtime = []
-d_selected_buildtime = []
-d_buildtime_perc = []
-d_raw_data = []
+d_data = []
 for rec in cur:
     timestamp = int(rec['day'].strftime('%s'))*1000 + 1000*60*60*12
-    d_pkgs.append([timestamp, rec['pkgs']])
-    d_selected_pkgs.append([timestamp, rec['selected_pkgs']])
-    d_pkgs_perc.append([timestamp,
-            float(rec['selected_pkgs'] or 0)/float(rec['pkgs']) * 100])
-    d_buildtime.append([timestamp, rec['total_build_time'] or 0])
-    d_selected_buildtime.append([timestamp, rec['selected_total_build_time'] or None])
-    d_buildtime_perc.append([timestamp, float(rec['selected_total_build_time'] or 0)/float(rec['total_build_time'] or 1) * 100])
-
-    d_raw_data.append([
+    d_data.append([
         timestamp,
         rec['pkgs'],
         rec['selected_pkgs'],
@@ -127,5 +113,5 @@ print json.dumps({
     'n_pkg':    len(pkgs),
     'n_pkg_s':  "" if len(pkgs) == 1 else "s",
     'pkg_list': pkg_list,
-    'raw_data': d_raw_data,
+    'data': d_data,
 })
