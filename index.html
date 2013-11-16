@@ -89,14 +89,15 @@ function timespanFormatter(period, axis) {
 
 function setup(data) {
     // Get individual data lines
-    var pkgs = jQuery.map(data['data'], function (r) { return [[r[0], r[1]]] });
-    var selected_pkgs = jQuery.map(data['data'], function (r) { return [[r[0], r[2]]] });
-    var pkgs_perc = jQuery.map(data['data'], function (r) { return [[r[0], r[3]]] });
-    var buildtime = jQuery.map(data['data'], function (r) { return [[r[0], r[4]]] });
-    var selected_buildtime = jQuery.map(data['data'], function (r) { return [[r[0], r[5]]] });
-    var buildtime_perc = jQuery.map(data['data'], function (r) { return [[r[0], r[6]]] });
-
-        
+    function column(n) {
+        return jQuery.map(data['data'], function (r) { return [[r[0], r[n]]] });
+    }
+    var pkgs =               column(1);
+    var selected_pkgs =      column(2);
+    var pkgs_perc =          column(3);
+    var buildtime =          column(4);
+    var selected_buildtime = column(5);
+    var buildtime_perc =     column(6);
 
 	var d = [ 
 	    {
