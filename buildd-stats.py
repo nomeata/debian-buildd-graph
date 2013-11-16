@@ -78,7 +78,7 @@ cur.execute(QUERY)
 print 'Content-Type: text/html\n\n'
 print '''
     <html>
-    <head><title>Haskell Buildd exposure stats</title></head>
+    <head><title>Buildd exposure stats</title></head>
     <style type="text/css">
         #placeholder { width: 900px; height: 300 }
         #placeholder2 { width: 900px; height: 300 }
@@ -410,8 +410,8 @@ print '''
     <h3>What is this?</h3>
     <p>
     This plots the number and buildtimes of uploads to the Debian buildd database
-    on architecture %(arch)s, with special emphasis on packages by the Debian Haskell
-    Group. The statistics below combine the data from the selected range; you can
+    on architecture %(arch)s, with special emphasis your selected packages.
+    The statistics below combine the data from the selected range; you can
     select ranges by dragging in the graphs, or by using the buttons below.
     </p>
     <p>
@@ -424,6 +424,13 @@ print '''
     The graphs are generated with <a href="http://www.flotcharts.org/">Flot</a> version <span id="flotversion"></span>.
     </p>
 
+    <h3>Configure</h3>
+    <form method="GET">
+    <input name="p" value="%(p_query)s" title="Enter package names or maintainer e-mail addresses, separated by spaces or commas." style="width:100%%"/><br/>
+    <input value="Submit" type="submit"/>
+    </form>
+
+
     <h3>Control</h3>
     <input checked="checked" type='checkbox' id="toggle-perc" name='toggle-perc'/><label for='toggle-perc'>Show percentages</label><br/>
     Select range: 
@@ -434,7 +441,7 @@ print '''
     <h3>Statistics</h3>
 
     <table class="stats">
-    <thead><th>&nbsp;</th><th>All</th><th colspan="2">Haskell</th></thead>
+    <thead><th>&nbsp;</th><th>All</th><th colspan="2">Selected</th></thead>
     <tbody>
     <tr><th># uploads:</th><td id="alluploads"/><td id="selecteduploads"/><td id="uploadsperc"/></tr>
     <tr><th>buildtime:</th><td id="allbuildtime"/><td id="selectedbuildtime"/><td id="buildtimeperc"/></tr>
@@ -448,7 +455,7 @@ print '''
     </td>
     </tr>
     </table>
-	''' % { 'arch': ARCH }
+        ''' % { 'arch': ARCH, 'p_query': form.getfirst('p',DEFAULT_P) }
 
 print '''
     </body>
