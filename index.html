@@ -88,23 +88,34 @@ function timespanFormatter(period, axis) {
 }
 
 function setup(data) {
+    // Get individual data lines
+    var pkgs = jQuery.map(data['raw_data'], function (r) { return [[r[0], r[1]]] });
+    var selected_pkgs = jQuery.map(data['raw_data'], function (r) { return [[r[0], r[2]]] });
+    var pkgs_perc = jQuery.map(data['raw_data'], function (r) { return [[r[0], r[3]]] });
+    var buildtime = jQuery.map(data['raw_data'], function (r) { return [[r[0], r[4]]] });
+    var selected_buildtime = jQuery.map(data['raw_data'], function (r) { return [[r[0], r[5]]] });
+    var buildtime_perc = jQuery.map(data['raw_data'], function (r) { return [[r[0], r[6]]] });
+
+        
+
 	var d = [ 
 	    {
-		data: data['pkgs'],
+        // return list in list as lists are flattened by jQuery.map
+		data: pkgs,
 		label: "# uploads (all)",
 		lines: {
 		    fill: true,
 		    lineWidth: 0,
 		},
 	    }, {
-		data: data['selected_pkgs'],
+		data: selected_pkgs,
 		label: "# uploads (selected)",
 		lines: {
 		    fill: 1,
 		    lineWidth: 0,
 		},
 	    }, {
-		data: data['pkgs_perc'],
+		data: pkgs_perc,
 		label: "percentage",
 		yaxis: 2,
 		lines: { lineWidth: 1, },
@@ -113,14 +124,14 @@ function setup(data) {
 
 	var d2 = [ 
 	    {
-		data: data['buildtime'],
+		data: buildtime,
 		label: "buildtime (all)",
 		lines: {
 		    fill: true,
 		    lineWidth: 0,
 		},
 	    }, {
-		data: data['selected_buildtime'],
+		data: selected_buildtime,
 		label: "buildtime (selected)",
 		fill: 1,
 		lines: {
@@ -128,7 +139,7 @@ function setup(data) {
 		    lineWidth: 0,
 		},
 	    }, {
-		data: data['buildtime_perc'],
+		data: buildtime_perc,
 		label: "percentage",
 		yaxis: 2,
 		lines: { lineWidth: 1, },
@@ -222,8 +233,8 @@ function setup(data) {
 		return sum;
 	    }
 
-	    var alluploads = sumup(data['pkgs']);
-	    var selecteduploads = sumup(data['selected_pkgs']);
+	    var alluploads = sumup(pkgs);
+	    var selecteduploads = sumup(selected_pkgs);
 	    $("#alluploads").text(alluploads);
 	    $("#selecteduploads").text(selecteduploads);
 	    if (alluploads> 0) {
@@ -232,8 +243,8 @@ function setup(data) {
 		    $("#uploadsperc").text("\u2014");
 	    }
 
-	    var allbuildtime = sumup(data['buildtime']);
-	    var selectedbuildtime = sumup(data['selected_buildtime']);
+	    var allbuildtime = sumup(buildtime);
+	    var selectedbuildtime = sumup(selected_buildtime);
 	    $("#allbuildtime").text(timespanFormatter(allbuildtime));
 	    $("#selectedbuildtime").text(timespanFormatter(selectedbuildtime));
 	    if (allbuildtime > 0) {

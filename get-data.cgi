@@ -100,6 +100,7 @@ d_pkgs_perc = []
 d_buildtime = []
 d_selected_buildtime = []
 d_buildtime_perc = []
+d_raw_data = []
 for rec in cur:
     timestamp = int(rec['day'].strftime('%s'))*1000 + 1000*60*60*12
     d_pkgs.append([timestamp, rec['pkgs']])
@@ -110,17 +111,21 @@ for rec in cur:
     d_selected_buildtime.append([timestamp, rec['selected_total_build_time'] or None])
     d_buildtime_perc.append([timestamp, float(rec['selected_total_build_time'] or 0)/float(rec['total_build_time'] or 1) * 100])
 
+    d_raw_data.append([
+        timestamp,
+        rec['pkgs'],
+        rec['selected_pkgs'],
+        float(rec['selected_pkgs'] or 0)/float(rec['pkgs']) * 100,
+        rec['total_build_time'] or 0,
+        rec['selected_total_build_time'] or None,
+        float(rec['selected_total_build_time'] or 0)/float(rec['total_build_time'] or 1) * 100,         ])
+
 print 'Content-Type: application/json\n\n'
 print json.dumps({
-    'pkgs': d_pkgs,
-    'selected_pkgs': d_selected_pkgs,
-    'pkgs_perc': d_pkgs_perc,
-    'buildtime': d_buildtime,
-    'selected_buildtime': d_selected_buildtime,
-    'buildtime_perc': d_buildtime_perc,
     'arch':     arch,
     'p_query':  form.getfirst('p',DEFAULT_P),
     'n_pkg':    len(pkgs),
     'n_pkg_s':  "" if len(pkgs) == 1 else "s",
     'pkg_list': pkg_list,
+    'raw_data': d_raw_data,
 })
