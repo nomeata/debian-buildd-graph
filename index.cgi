@@ -159,60 +159,56 @@ else:
         <script language="javascript" type="text/javascript" src="flot/jquery.flot.time.js"></script>
         <script language="javascript" type="text/javascript" src="flot/jquery.flot.selection.js"></script>
         <script type="text/javascript">
-            $(function() {
-                function percFormatter(perc, axis) {
-                    return perc.toFixed(axis.tickDecimals) + "%";
-                }
-                function timespanFormatter(period, axis) {
-                    var timespan = 1;
-                    var format = 's';
-                    if (period > 31556926) {
-                        // More than one year
-                        format = 'y';
-                        timespan = (period / 31556926).toFixed(2);
-                    }
-                    else if (period > 2629744) {
-                        // More than one month
-                        format = 'm';
-                        timespan = (period / 2629744).toFixed(2);
-                    }
-                    else if (period > 604800) {
-                        // More than one week
-                        format = 'w';
-                        timespan = (period / 604800).toFixed(2);
-                    }
-                    else if (period > 86400) {
-                        // More than one day
-                        format = 'd';
-                        timespan = (period / 86400).toFixed(2);
-                    }
-                    else if (period > 3600) {
-                        // More than one hour
-                        format = 'h';
-                        timespan = (period / 3600).toFixed(2);
-                    }
-                    else if (period > 60) {
-                        // More than one minute
-                        format = 'm';
-                        timespan = (period / 60).toFixed(2);
-                    } else {
-                        timespan = period.toFixed(2);
-                    }
-                     
-                    /*
-                    // Remove the s
-                    if(timespan == 1) {
-                        format = format.substr(0, format.length-1);
-                    }
-                    */
-                     
-                    return timespan + '' + format;
-                }
+        function percFormatter(perc, axis) {
+            return perc.toFixed(axis.tickDecimals) + "%";
+        }
+        function timespanFormatter(period, axis) {
+            var timespan = 1;
+            var format = 's';
+            if (period > 31556926) {
+                // More than one year
+                format = 'y';
+                timespan = (period / 31556926).toFixed(2);
+            }
+            else if (period > 2629744) {
+                // More than one month
+                format = 'm';
+                timespan = (period / 2629744).toFixed(2);
+            }
+            else if (period > 604800) {
+                // More than one week
+                format = 'w';
+                timespan = (period / 604800).toFixed(2);
+            }
+            else if (period > 86400) {
+                // More than one day
+                format = 'd';
+                timespan = (period / 86400).toFixed(2);
+            }
+            else if (period > 3600) {
+                // More than one hour
+                format = 'h';
+                timespan = (period / 3600).toFixed(2);
+            }
+            else if (period > 60) {
+                // More than one minute
+                format = 'm';
+                timespan = (period / 60).toFixed(2);
+            } else {
+                timespan = period.toFixed(2);
+            }
+             
+            /*
+            // Remove the s
+            if(timespan == 1) {
+                format = format.substr(0, format.length-1);
+            }
+            */
+             
+            return timespan + '' + format;
+        }
 
-    var data = 
-        '''
-    print_data()
-    print ''';
+        function setup(data) {
                 var d = [ 
                     {
                         data: data['pkgs'],
@@ -346,6 +342,7 @@ else:
                         }
                         return sum;
                     }
+
                     var alluploads = sumup(data['pkgs']);
                     var selecteduploads = sumup(data['selected_pkgs']);
                     $("#alluploads").text(alluploads);
@@ -424,7 +421,17 @@ else:
                 $("#toggle-perc").change(checkPerc);
 
                 $("#flotversion").text($.plot.version);
+        }
+        $(function() {
+            jQuery.ajax({
+                data: { json: 'yesplease' },
+                success: function(data) {
+                    setup(data);
+                },
             });
+        });
+    '''
+    print '''
         </script>
         </head>
         <body>
