@@ -408,9 +408,8 @@ print '''
     <p>
     This was created by Joachim Breitner &lt;<a
     href="mailto:nomeata@debian.org">nomeata@debian.org</a>&gt;, and the source can
-    be found in the Debian Haskell Group's <a
-    href="http://darcs.debian.org/pkg-haskell/tools/buildd-stats.py">tools
-    repo</a>. Improvements are welcome, especially with regard to the HTML styling.
+    be obtained via git at <a
+    href="http://git.nomeata.de/?p=debian-buildd-graph.git">git://git.nomeata.de/debian-buildd-graph.git</a>. Improvements are welcome, especially with regard to the HTML styling.
     </p>
     <p>
     The graphs are generated with <a href="http://www.flotcharts.org/">Flot</a> version <span id="flotversion"></span>.
