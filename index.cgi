@@ -84,7 +84,7 @@ QUERY = '''
 	FROM allp FULL OUTER JOIN selected USING (day);''' % \
 	{ 'arch': arch }
 
-cur.execute(QUERY, {'pkgs': tuple(map(lambda s: "'%s'"%s, pkgs)) })
+cur.execute(QUERY, {'pkgs': tuple(pkgs) })
 
 print 'Content-Type: text/html\n\n'
 print '''
