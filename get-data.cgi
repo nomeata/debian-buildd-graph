@@ -26,6 +26,7 @@ import psycopg2
 import psycopg2.extras
 import re
 import json
+import sys
 
 conn = psycopg2.connect("service=wanna-build")
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -36,6 +37,11 @@ DEFAULT_P = 'pkg-haskell-maintainers@lists.alioth.debian.org'
 # Read package list from the user
 form = cgi.FieldStorage()
 pkgs_raw = form.getfirst('p', DEFAULT_P).replace(',',' ').split()
+
+def abort(s):
+    print 'Content-Type: application/json\n\n'
+    print json.dumps({'error': s})
+    sys.exit(0)
 
 # Replace e-mail addresses by packages
 pkgs = set()
@@ -49,18 +55,17 @@ for p in pkgs_raw:
     else:
         pkgs.add(p)
 if not pkgs:
-    raise ValueError("No packages selected. Maintainer address misspelled?")
+    abort("No packages selected. Maintainer address misspelled?")
 
 if len(pkgs) > 10:
     pkg_list = ",".join(list(pkgs)[:10]) + ",..."
 else:
     pkg_list = ",".join(list(pkgs))
 
-
 # Read arch from user
 arch = form.getfirst('a',DEFAULT_A)
 if not re.match('^[-0-9a-zA-Z]+$', arch):
-    raise ValueError("Invalid architecture selected", arch)
+    abort("Invalid architecture %s selected" % arch)
 
 QUERY = '''
 	WITH allp AS (

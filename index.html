@@ -324,7 +324,11 @@ function loadData(){
 	    a: $("input[name='a']").val(),
 	},
 	success: function(data) {
-	    setup(data);
+	    if (data['error']) {
+	    	alert(data['error'])
+	    } else {
+	        setup(data)
+            }
 	},
     });
 }
