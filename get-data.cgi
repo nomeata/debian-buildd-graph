@@ -57,10 +57,12 @@ for p in pkgs_raw:
 if not pkgs:
     abort("No packages selected. Maintainer address misspelled?")
 
+pkg_list = list(pkgs)
+pkg_list.sort()
 if len(pkgs) > 10:
-    pkg_list = ",".join(list(pkgs)[:10]) + ",..."
+    pkg_list = ",".join(pkg_list[:10]) + ",..."
 else:
-    pkg_list = ",".join(list(pkgs))
+    pkg_list = ",".join(pkg_list)
 
 # Read arch from user
 arch = form.getfirst('a',DEFAULT_A)
