@@ -30,15 +30,23 @@ conn = psycopg2.connect("service=wanna-build")
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 ARCH = 'i386'
+DEFAULT_P = 'pkg-haskell-maintainers@lists.alioth.debian.org'
 
-DAYS_QUERY = '''SELECT (SELECT min(timestamp) FROM %(arch)s.pkg_histor '1' day * generate_series(0, (SELECT extract(day from max(timestamp)-min(timestamp)) FROM %(arch)s.pkg_history)::integer))''' % {'arch': ARCH}
+# Read package list from the user
+form = cgi.FieldStorage()
+pkgs_raw = form.getfirst('p', DEFAULT_P).replace(',',' ').split()
 
-pattern =re.compile('^([-_a-zA-Z0-9]*)\s*.*pkg-haskell-maintainers@lists.alioth.debian.org.*$')
-pkgs = []
-for line in file('/srv/buildd.debian.org/etc/Maintainers'):
-    m = pattern.match(line)
-    if m:
-        pkgs.append(m.group(1))
+# Replace e-mail addresses by packages
+pkgs = ['dummynametogetvalidpostgresqlevenifthislistisempty']
+pattern =re.compile('^([-_a-zA-Z0-9]*)\s*.*<(.*)>$')
+for p in pkgs_raw:
+    if "@" in p:
+        for line in file('/srv/buildd.debian.org/etc/Maintainers'):
+            m = pattern.match(line)
+            if m and m.group(2) == p:
+                pkgs.append(m.group(1))
+    else:
+        pkgs.append(p)
 
 QUERY = '''
 	WITH allp AS (
