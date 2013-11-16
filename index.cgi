@@ -257,7 +257,7 @@ print '''
                     }, {
                         min: 0,
                         max: 100,
-                        alignTicksWithAxis: 1,
+                        tickLength: 0,
                         tickFormatter: percFormatter,
                         position: 'right',
                     } ],
@@ -277,7 +277,7 @@ print '''
                     }, {
                         min: 0,
                         max: 100,
-                        alignTicksWithAxis: 1,
+                        tickLength: 0,
                         tickFormatter: percFormatter,
                         position: 'right',
                     } ],
