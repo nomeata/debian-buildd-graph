@@ -313,16 +313,24 @@ function setup(data) {
 	$("input[name='p']").val(data['p_query']);
 
 }
-$(function() {
-    $(document)
-	.ajaxStart(function () {$.blockUI({message: "Loading data..."})})
-	.ajaxStop($.unblockUI);
+function loadData(){
     jQuery.ajax({
 	url: "get-data.cgi",
+	data: {
+	    p: $("input[name='p']").val(),
+	    a: $("input[name='a']").val(),
+	},
 	success: function(data) {
 	    setup(data);
 	},
     });
+}
+$(function() {
+    $("#reload").click(loadData);
+    $(document)
+	.ajaxStart(function () {$.blockUI({message: "Loading data..."})})
+	.ajaxStop($.unblockUI);
+    loadData();
 });
 </script>
 </head>
@@ -351,10 +359,8 @@ Improvements are welcome, especially with regard to the HTML styling.
 </p>
 
 <h3>Configure</h3>
-<form method="GET">
-<input name="p" value="" title="Enter package names or maintainer e-mail addresses, separated by spaces or commas." style="width:100%"/><br/>
-<input name="a" value="" title="Select architecture" size="10"/>&nbsp;<input value="Submit" type="submit"/>
-</form>
+<input name="p" value="pkg-haskell-maintainers@lists.alioth.debian.org" title="Enter package names or maintainer e-mail addresses, separated by spaces or commas." style="width:100%"/><br/>
+<input name="a" value="i386" title="Select architecture" size="10"/>&nbsp;<input id="reload" value="Reload" type="submit"/>
 
 
 <h3>Control</h3>
