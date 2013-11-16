@@ -49,10 +49,10 @@ QUERY = '''
                 WHERE timestamp > '2010-01-01'
 		GROUP BY day
 		ORDER BY day
-	), haskell as (
-		SELECT COUNT(*) as haskell_pkgs,
+	), selected as (
+		SELECT COUNT(*) as selected_pkgs,
 		       timestamp :: date AS day,
-		       sum(build_time) as haskell_total_build_time
+		       sum(build_time) as selected_total_build_time
 		FROM %(arch)s_public.pkg_history
 		WHERE package IN (%(pkgs)s)
                   AND timestamp > '2010-01-01'
@@ -60,7 +60,7 @@ QUERY = '''
 		ORDER BY day
 	)
 	SELECT *
-	FROM allp FULL OUTER JOIN haskell USING (day);''' % \
+	FROM allp FULL OUTER JOIN selected USING (day);''' % \
 	{ 'arch': ARCH,
 	  'pkgs': ",".join(map(lambda s: "'%s'"%s, pkgs)) }
 
@@ -158,36 +158,36 @@ print '''
             }
 
             var d_pkgs = [];
-            var d_haskell_pkgs = [];
+            var d_selected_pkgs = [];
             var d_pkgs_perc = [];
             var d_buildtime = [];
-            var d_haskell_buildtime = [];
+            var d_selected_buildtime = [];
             var d_buildtime_perc = [];
     '''
 for rec in cur:
     timestamp = int(rec['day'].strftime('%s'))*1000 + 1000*60*60*12
     print "d_pkgs.push([%s, %s])\n" % (timestamp, rec['pkgs']);
-    print "d_haskell_pkgs.push([%s, %s])\n" % (timestamp, rec['haskell_pkgs'] or 'null');
+    print "d_selected_pkgs.push([%s, %s])\n" % (timestamp, rec['selected_pkgs'] or 'null');
     print "d_pkgs_perc.push([%s, %s])\n" % (timestamp,
-        float(rec['haskell_pkgs'] or 0)/float(rec['pkgs']) * 100);
+        float(rec['selected_pkgs'] or 0)/float(rec['pkgs']) * 100);
 
     print "d_buildtime.push([%s, %s])\n" % (timestamp, rec['total_build_time'] or 0);
-    print "d_haskell_buildtime.push([%s, %s])\n" % (timestamp, rec['haskell_total_build_time'] or 'null');
+    print "d_selected_buildtime.push([%s, %s])\n" % (timestamp, rec['selected_total_build_time'] or 'null');
     print "d_buildtime_perc.push([%s, %s])\n" % (timestamp,
-        float(rec['haskell_total_build_time'] or 0)/float(rec['total_build_time'] or 1) * 100);
+        float(rec['selected_total_build_time'] or 0)/float(rec['total_build_time'] or 1) * 100);
 
 print '''
             var d = [ 
                 {
                     data: d_pkgs,
-                    label: "# uploads",
+                    label: "# uploads (all)",
                     lines: {
                         fill: true,
                         lineWidth: 0,
                     },
                 }, {
-                    data: d_haskell_pkgs,
-                    label: "# haskell uploads",
+                    data: d_selected_pkgs,
+                    label: "# uploads (selected)",
                     lines: {
                         fill: 1,
                         lineWidth: 0,
@@ -203,14 +203,14 @@ print '''
             var d2 = [ 
                 {
                     data: d_buildtime,
-                    label: "buildtime",
+                    label: "buildtime (all)",
                     lines: {
                         fill: true,
                         lineWidth: 0,
                     },
                 }, {
-                    data: d_haskell_buildtime,
-                    label: "haskell buildtime",
+                    data: d_selected_buildtime,
+                    label: "buildtime (selected)",
                     fill: 1,
                     lines: {
                         fill: 1,
@@ -309,21 +309,21 @@ print '''
                     return sum;
                 }
                 var alluploads = sumup(d_pkgs);
-                var haskelluploads = sumup(d_haskell_pkgs);
+                var selecteduploads = sumup(d_selected_pkgs);
                 $("#alluploads").text(alluploads);
-                $("#haskelluploads").text(haskelluploads);
+                $("#selecteduploads").text(selecteduploads);
 		if (alluploads> 0) {
-			$("#uploadsperc").text((haskelluploads/alluploads * 100).toFixed() + "%%");
+			$("#uploadsperc").text((selecteduploads/alluploads * 100).toFixed() + "%%");
 		} else {
 			$("#uploadsperc").text("\u2014");
 		}
 
                 var allbuildtime = sumup(d_buildtime);
-                var haskellbuildtime = sumup(d_haskell_buildtime);
+                var selectedbuildtime = sumup(d_selected_buildtime);
                 $("#allbuildtime").text(timespanFormatter(allbuildtime));
-                $("#haskellbuildtime").text(timespanFormatter(haskellbuildtime));
+                $("#selectedbuildtime").text(timespanFormatter(selectedbuildtime));
 		if (allbuildtime > 0) {
-			$("#buildtimeperc").text((haskellbuildtime/allbuildtime * 100).toFixed() + "%%");
+			$("#buildtimeperc").text((selectedbuildtime/allbuildtime * 100).toFixed() + "%%");
 		} else {
 			$("#buildtimeperc").text("\u2014");
 		}
@@ -334,19 +334,19 @@ print '''
 		} else {
                 	$("#allavgbuildtime").text("\u2014");
 		}
-		if (haskelluploads > 0) {
-			var haskellavgbuildtime = haskellbuildtime / haskelluploads
-                	$("#haskellavgbuildtime").text(timespanFormatter(haskellavgbuildtime));
+		if (selecteduploads > 0) {
+			var selectedavgbuildtime = selectedbuildtime / selecteduploads
+                	$("#selectedavgbuildtime").text(timespanFormatter(selectedavgbuildtime));
 		} else {
-                	$("#haskellavgbuildtime").text("\u2014");
+                	$("#selectedavgbuildtime").text("\u2014");
 		}
 
                 var wattage = 472; // http://www.vertatique.com/average-power-use-server
                 var kgco2perkwh = 0.5925; // http://www.carbonfund.org/how-we-calculate
                 var allco2 = ((allbuildtime / (60*60)) * wattage / 1000) * kgco2perkwh;
-                var haskellco2 = ((haskellbuildtime / (60*60)) * wattage / 1000) * kgco2perkwh;
+                var selectedco2 = ((selectedbuildtime / (60*60)) * wattage / 1000) * kgco2perkwh;
                 $("#allco2").text(allco2.toFixed()+ "kg");
-                $("#haskellco2").text(haskellco2.toFixed()+ "kg");
+                $("#selectedco2").text(selectedco2.toFixed()+ "kg");
                 $("#wattage").text(wattage);
                 $("#kgco2perkwh").text(kgco2perkwh);
             }
@@ -427,10 +427,10 @@ print '''
     <table class="stats">
     <thead><th>&nbsp;</th><th>All</th><th colspan="2">Haskell</th></thead>
     <tbody>
-    <tr><th># uploads:</th><td id="alluploads"/><td id="haskelluploads"/><td id="uploadsperc"/></tr>
-    <tr><th>buildtime:</th><td id="allbuildtime"/><td id="haskellbuildtime"/><td id="buildtimeperc"/></tr>
-    <tr><th>avg. buildtime:</th><td id="allavgbuildtime"/><td id="haskellavgbuildtime"/><td>&nbsp;</td></tr>
-    <tr><th>CO<sub>2</sub>:<sup>*</sup></th><td id="allco2"/><td id="haskellco2"/><td>&nbsp;</td></tr>
+    <tr><th># uploads:</th><td id="alluploads"/><td id="selecteduploads"/><td id="uploadsperc"/></tr>
+    <tr><th>buildtime:</th><td id="allbuildtime"/><td id="selectedbuildtime"/><td id="buildtimeperc"/></tr>
+    <tr><th>avg. buildtime:</th><td id="allavgbuildtime"/><td id="selectedavgbuildtime"/><td>&nbsp;</td></tr>
+    <tr><th>CO<sub>2</sub>:<sup>*</sup></th><td id="allco2"/><td id="selectedco2"/><td>&nbsp;</td></tr>
     </tbody>
     </table>
     <div style="font-size:small; text-align:right">
