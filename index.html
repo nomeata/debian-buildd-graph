@@ -344,6 +344,12 @@ function parseHash() {
 $(function() {
     parseHash();
     $("#reload").click(loadData);
+    $("input[name='p']").on('keyup', function(e) {
+	    if (e.keyCode === 13) { $('#reload').click(); }
+    });
+    $("input[name='a']").on('keyup', function(e) {
+	    if (e.keyCode === 13) { $('#reload').click(); }
+    });
     $(document)
 	.ajaxStart(function () {$.blockUI({message: "Loading data..."})})
 	.ajaxStop($.unblockUI);
