@@ -420,13 +420,10 @@ print '''
     select ranges by dragging in the graphs, or by using the buttons below.
     </p>
     <p>
-    This was created by Joachim Breitner &lt;<a
-    href="mailto:nomeata@debian.org">nomeata@debian.org</a>&gt;, and the source can
-    be obtained via git at <a
-    href="http://git.nomeata.de/?p=debian-buildd-graph.git">git://git.nomeata.de/debian-buildd-graph.git</a>. Improvements are welcome, especially with regard to the HTML styling.
-    </p>
-    <p>
-    The graphs are generated with <a href="http://www.flotcharts.org/">Flot</a> version <span id="flotversion"></span>.
+    This was created by <a href="mailto:nomeata@debian.org">Joachim Breitner</a>
+    and the source can be obtained
+    <a href="http://git.nomeata.de/?p=debian-buildd-graph.git">via git</a>.
+    Improvements are welcome, especially with regard to the HTML styling.
     </p>
 
     <h3>Configure</h3>
@@ -456,6 +453,8 @@ print '''
     </table>
     <div style="font-size:small; text-align:right">
     <sup>*</sup>CO<sub>2</sub> production based on <a href="http://www.vertatique.com/average-power-use-server"><span id="wattage"></span> Watt</a> and <a href="http://www.carbonfund.org/how-we-calculate"><span id="kgco2perkwh"></span> kg CO<sub>2</sub>/kWh</a>.
+    <br/>
+    The graphs are generated with <a href="http://www.flotcharts.org/">Flot</a> version <span id="flotversion"></span>.
     </div>
     </td>
     </tr>
