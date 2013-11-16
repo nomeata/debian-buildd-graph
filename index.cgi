@@ -56,7 +56,7 @@ else:
     pkg_list = ",".join(list(pkgs))
 
 
-# Reach arch from user
+# Read arch from user
 arch = form.getfirst('a',DEFAULT_A)
 if not re.match('^[-0-9a-zA-Z]+$', arch):
     raise ValueError("Invalid architecture selected", arch)
