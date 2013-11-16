@@ -158,6 +158,7 @@ else:
         <script language="javascript" type="text/javascript" src="flot/jquery.flot.js"></script>
         <script language="javascript" type="text/javascript" src="flot/jquery.flot.time.js"></script>
         <script language="javascript" type="text/javascript" src="flot/jquery.flot.selection.js"></script>
+        <script language="javascript" type="text/javascript" src="blockui/jquery.blockUI.js"></script>
         <script type="text/javascript">
         function percFormatter(perc, axis) {
             return perc.toFixed(axis.tickDecimals) + "%";
@@ -423,6 +424,9 @@ else:
                 $("#flotversion").text($.plot.version);
         }
         $(function() {
+            $(document)
+                .ajaxStart(function () {$.blockUI({message: "Loading data..."})})
+                .ajaxStop($.unblockUI);
             jQuery.ajax({
                 data: { json: 'yesplease' },
                 success: function(data) {
