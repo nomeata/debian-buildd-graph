@@ -112,6 +112,11 @@ def print_data():
         'buildtime': d_buildtime,
         'selected_buildtime': d_selected_buildtime,
         'buildtime_perc': d_buildtime_perc,
+        'arch':     arch,
+        'p_query':  form.getfirst('p',DEFAULT_P),
+        'n_pkg':    len(pkgs),
+        'n_pkg_s':  "" if len(pkgs) == 1 else "s",
+        'pkg_list': pkg_list,
     })
 
 if 'json' in form:
@@ -349,7 +354,7 @@ else:
                     $("#alluploads").text(alluploads);
                     $("#selecteduploads").text(selecteduploads);
                     if (alluploads> 0) {
-                            $("#uploadsperc").text((selecteduploads/alluploads * 100).toFixed() + "%%");
+                            $("#uploadsperc").text((selecteduploads/alluploads * 100).toFixed() + "%");
                     } else {
                             $("#uploadsperc").text("\u2014");
                     }
@@ -359,7 +364,7 @@ else:
                     $("#allbuildtime").text(timespanFormatter(allbuildtime));
                     $("#selectedbuildtime").text(timespanFormatter(selectedbuildtime));
                     if (allbuildtime > 0) {
-                            $("#buildtimeperc").text((selectedbuildtime/allbuildtime * 100).toFixed() + "%%");
+                            $("#buildtimeperc").text((selectedbuildtime/allbuildtime * 100).toFixed() + "%");
                     } else {
                             $("#buildtimeperc").text("\u2014");
                     }
@@ -422,6 +427,18 @@ else:
                 $("#toggle-perc").change(checkPerc);
 
                 $("#flotversion").text($.plot.version);
+
+                $("#arch").text(data['arch']);
+                $("#n_pkg").text(data['n_pkg']);
+                $("#pkg_list").attr('title',data['pkg_list']);
+                if (data['n_pkg'] == 1) {
+                    $("#pkg_list").text('1 selected package');
+                } else {
+                    $("#pkg_list").text(data['n_pkg'] + ' selected packages');
+                }
+                $("input[name='a']").val(data['arch']);
+                $("input[name='p']").val(data['p_query']);
+
         }
         $(function() {
             $(document)
@@ -434,8 +451,6 @@ else:
                 },
             });
         });
-    '''
-    print '''
         </script>
         </head>
         <body>
@@ -450,8 +465,8 @@ else:
         <h3>What is this?</h3>
         <p>
         This plots the number and buildtimes of uploads to the Debian buildd database
-        on architecture %(arch)s, with special emphasis your
-        <span style="border-bottom: thin dotted" title="%(pkg_list)s">%(n_pkg)d selected package%(n_pkg_s)s</span>.
+        on architecture <span id="arch"></span>, with special emphasis your
+        <span id="pkg_list" style="border-bottom: thin dotted"></span>.
         The statistics below combine the data from the selected range; you can
         select ranges by dragging in the graphs, or by using the buttons below.
         </p>
@@ -464,8 +479,8 @@ else:
 
         <h3>Configure</h3>
         <form method="GET">
-        <input name="p" value="%(p_query)s" title="Enter package names or maintainer e-mail addresses, separated by spaces or commas." style="width:100%%"/><br/>
-        <input name="a" value="%(arch)s" title="Select architecture" size="10"/>&nbsp;<input value="Submit" type="submit"/>
+        <input name="p" value="" title="Enter package names or maintainer e-mail addresses, separated by spaces or commas." style="width:100%"/><br/>
+        <input name="a" value="" title="Select architecture" size="10"/>&nbsp;<input value="Submit" type="submit"/>
         </form>
 
 
@@ -495,14 +510,6 @@ else:
         </td>
         </tr>
         </table>
-            ''' % { 'arch':     cgi.escape(arch),
-                    'p_query':  cgi.escape(form.getfirst('p',DEFAULT_P),True),
-                    'n_pkg':    len(pkgs),
-                    'n_pkg_s':  cgi.escape("" if len(pkgs) == 1 else "s",True),
-                    'pkg_list': cgi.escape(pkg_list,True),
-                  }
-
-    print '''
         </body>
         </html>
         '''
