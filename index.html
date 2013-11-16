@@ -312,6 +312,9 @@ function setup(data) {
 	$("input[name='a']").val(data['arch']);
 	$("input[name='p']").val(data['p_query']);
 
+	href =  "#p=" + encodeURIComponent(data['p_query']);
+	href += ";a=" + encodeURIComponent(data['arch']);
+	window.location.hash = href;
 }
 function loadData(){
     jQuery.ajax({
@@ -325,11 +328,26 @@ function loadData(){
 	},
     });
 }
+function parseHash() {
+	var queryString = {};
+	window.location.href.replace(
+		new RegExp("([^?=&;#]+)(=([^&;]*))", "g"),
+		function($0, $1, $2, $3) {queryString[$1] = decodeURIComponent($3); }
+	);
+	if (queryString['p']) {
+		$("input[name='p']").val(queryString['p'])
+	}
+	if (queryString['a']) {
+		$("input[name='a']").val(queryString['a'])
+	}
+}
 $(function() {
+    parseHash();
     $("#reload").click(loadData);
     $(document)
 	.ajaxStart(function () {$.blockUI({message: "Loading data..."})})
 	.ajaxStop($.unblockUI);
+    
     loadData();
 });
 </script>
