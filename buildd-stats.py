@@ -37,7 +37,7 @@ form = cgi.FieldStorage()
 pkgs_raw = form.getfirst('p', DEFAULT_P).replace(',',' ').split()
 
 # Replace e-mail addresses by packages
-pkgs = set(['dummynametogetvalidpostgresqlevenifthislistisempty'])
+pkgs = set()
 pattern =re.compile('^([-_a-zA-Z0-9]*)\s*.*<(.*)>$')
 for p in pkgs_raw:
     if "@" in p:
@@ -47,16 +47,19 @@ for p in pkgs_raw:
                 pkgs.add(m.group(1))
     else:
         pkgs.add(p)
+if not pkgs:
+    raise ValueError("No packages selected. Maintainer address misspelled?")
 
 if len(pkgs) > 10:
     pkg_list = ",".join(list(pkgs)[:10]) + ",..."
 else:
     pkg_list = ",".join(list(pkgs))
 
+
 # Reach arch from user
 arch = form.getfirst('a',DEFAULT_A)
-if not re.match('^[a-zA-Z]+$', arch):
-    raise ValueError("Invalid architecture selected")
+if not re.match('^[-0-9a-zA-Z]+$', arch):
+    raise ValueError("Invalid architecture selected", arch)
 
 QUERY = '''
 	WITH allp AS (
@@ -72,17 +75,16 @@ QUERY = '''
 		       timestamp :: date AS day,
 		       sum(build_time) as selected_total_build_time
 		FROM %(arch)s_public.pkg_history
-		WHERE package IN (%(pkgs)s)
+		WHERE package IN %%(pkgs)s
                   AND timestamp > '2010-01-01'
 		GROUP BY day
 		ORDER BY day
 	)
 	SELECT *
 	FROM allp FULL OUTER JOIN selected USING (day);''' % \
-	{ 'arch': arch,
-	  'pkgs': ",".join(map(lambda s: "'%s'"%s, pkgs)) }
+	{ 'arch': arch }
 
-cur.execute(QUERY)
+cur.execute(QUERY, {'pkgs': tuple(map(lambda s: "'%s'"%s, pkgs)) })
 
 print 'Content-Type: text/html\n\n'
 print '''
