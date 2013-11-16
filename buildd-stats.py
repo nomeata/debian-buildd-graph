@@ -53,6 +53,11 @@ if len(pkgs) > 10:
 else:
     pkg_list = ",".join(list(pkgs))
 
+# Reach arch from user
+arch = form.getfirst('a',DEFAULT_A)
+if not re.match('^[a-zA-Z]+$', arch):
+    raise ValueError("Invalid architecture selected")
+
 QUERY = '''
 	WITH allp AS (
 		SELECT COUNT(*) as pkgs,
@@ -74,7 +79,7 @@ QUERY = '''
 	)
 	SELECT *
 	FROM allp FULL OUTER JOIN selected USING (day);''' % \
-	{ 'arch': form.getfirst('a',DEFAULT_A),
+	{ 'arch': arch,
 	  'pkgs': ",".join(map(lambda s: "'%s'"%s, pkgs)) }
 
 cur.execute(QUERY)
@@ -459,7 +464,7 @@ print '''
     </td>
     </tr>
     </table>
-        ''' % { 'arch':     cgi.escape(form.getfirst('a',DEFAULT_A),True),
+        ''' % { 'arch':     cgi.escape(arch),
                 'p_query':  cgi.escape(form.getfirst('p',DEFAULT_P),True),
                 'n_pkg':    len(pkgs),
                 'n_pkg_s':  cgi.escape("" if len(pkgs) == 1 else "s",True),
