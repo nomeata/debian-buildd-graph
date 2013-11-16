@@ -29,7 +29,7 @@ import re
 conn = psycopg2.connect("service=wanna-build")
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-ARCH = 'i386'
+DEFAULT_A = 'i386'
 DEFAULT_P = 'pkg-haskell-maintainers@lists.alioth.debian.org'
 
 # Read package list from the user
@@ -48,6 +48,10 @@ for p in pkgs_raw:
     else:
         pkgs.add(p)
 
+if len(pkgs) > 10:
+    pkg_list = ",".join(list(pkgs)[:10]) + ",..."
+else:
+    pkg_list = ",".join(list(pkgs))
 
 QUERY = '''
 	WITH allp AS (
@@ -70,7 +74,7 @@ QUERY = '''
 	)
 	SELECT *
 	FROM allp FULL OUTER JOIN selected USING (day);''' % \
-	{ 'arch': ARCH,
+	{ 'arch': form.getfirst('a',DEFAULT_A),
 	  'pkgs': ",".join(map(lambda s: "'%s'"%s, pkgs)) }
 
 cur.execute(QUERY)
@@ -401,7 +405,7 @@ print '''
     <body>
     <table>
     <tr>
-    <td>
+    <td valign="top">
     <div id="placeholder" class="demo-placeholder"></div>
     <div id="placeholder2" class="demo-placeholder"></div>
     <div id="overview" class="demo-placeholder"></div>
@@ -410,7 +414,8 @@ print '''
     <h3>What is this?</h3>
     <p>
     This plots the number and buildtimes of uploads to the Debian buildd database
-    on architecture %(arch)s, with special emphasis your selected packages.
+    on architecture %(arch)s, with special emphasis your
+    <span style="border-bottom: thin dotted" title="%(pkg_list)s">%(n_pkg)d selected package%(n_pkg_s)s</span>.
     The statistics below combine the data from the selected range; you can
     select ranges by dragging in the graphs, or by using the buttons below.
     </p>
@@ -427,7 +432,7 @@ print '''
     <h3>Configure</h3>
     <form method="GET">
     <input name="p" value="%(p_query)s" title="Enter package names or maintainer e-mail addresses, separated by spaces or commas." style="width:100%%"/><br/>
-    <input value="Submit" type="submit"/>
+    <input name="a" value="%(arch)s" title="Select architecture" size="10"/>&nbsp;<input value="Submit" type="submit"/>
     </form>
 
 
@@ -455,7 +460,12 @@ print '''
     </td>
     </tr>
     </table>
-        ''' % { 'arch': ARCH, 'p_query': form.getfirst('p',DEFAULT_P) }
+        ''' % { 'arch':     cgi.escape(form.getfirst('a',DEFAULT_A),True),
+                'p_query':  cgi.escape(form.getfirst('p',DEFAULT_P),True),
+                'n_pkg':    len(pkgs),
+                'n_pkg_s':  cgi.escape("" if len(pkgs) == 1 else "s",True),
+                'pkg_list': cgi.escape(pkg_list,True),
+              }
 
 print '''
     </body>
