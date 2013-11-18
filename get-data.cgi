@@ -74,25 +74,26 @@ QUERY = '''
 		SELECT COUNT(*) as pkgs,
 		       timestamp :: date AS day,
                        sum(build_time) as total_build_time
-		FROM %(arch)s_public.pkg_history
+		FROM pkg_history_public
                 WHERE timestamp > '2010-01-01'
+                  AND architecture = %(arch)s
 		GROUP BY day
 		ORDER BY day
 	), selected as (
 		SELECT COUNT(*) as selected_pkgs,
 		       timestamp :: date AS day,
 		       sum(build_time) as selected_total_build_time
-		FROM %(arch)s_public.pkg_history
-		WHERE package IN %%(pkgs)s
+		FROM pkg_history_public
+		WHERE package IN %(pkgs)s
                   AND timestamp > '2010-01-01'
+                  AND architecture = %(arch)s
 		GROUP BY day
 		ORDER BY day
 	)
 	SELECT *
-	FROM allp FULL OUTER JOIN selected USING (day);''' % \
-	{ 'arch': arch }
+	FROM allp FULL OUTER JOIN selected USING (day);'''
 
-cur.execute(QUERY, {'pkgs': tuple(pkgs) })
+cur.execute(QUERY, {'pkgs': tuple(pkgs), 'arch' : arch })
 
 d_data = []
 for rec in cur:
