@@ -90,6 +90,7 @@ function timespanFormatter(period, axis) {
 function setup(data) {
     // Get individual data lines
     function column(n) {
+        // return list in list as lists are flattened by jQuery.map
         return jQuery.map(data['data'], function (r) { return [[r[0], r[n]]] });
     }
     var pkgs =               column(1);
@@ -101,7 +102,6 @@ function setup(data) {
 
 	var d = [ 
 	    {
-        // return list in list as lists are flattened by jQuery.map
 		data: pkgs,
 		label: "# uploads (all)",
 		lines: {
