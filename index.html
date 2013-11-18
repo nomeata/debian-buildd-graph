@@ -87,6 +87,16 @@ function timespanFormatter(period, axis) {
     return timespan + '' + format;
 }
 
+// Returns the 99% quantile (randomized algorithm)
+// (to scale the axis ignoring historic outliers)
+function quantile(array) {
+	var max = 0;
+	for (var i = 0; i < 100; i++) {
+		max = Math.max(max, array[Math.floor(Math.random()*array.length)][1]);
+	}
+	return max;
+}
+
 function setup(data) {
     // Get individual data lines
     function column(n) {
@@ -176,7 +186,7 @@ function setup(data) {
 		    min: 0,
 		    labelWidth: 100,
 		    tickFormatter: timespanFormatter,
-		    max: 60*60*24,
+		    max: quantile(buildtime),
 		}, {
 		    min: 0,
 		    max: 100,
