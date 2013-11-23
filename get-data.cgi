@@ -100,8 +100,8 @@ for rec in cur:
     timestamp = int(rec['day'].strftime('%s'))*1000 + 1000*60*60*12
     d_data.append([
         timestamp,
-        rec['pkgs'],
-        rec['selected_pkgs'],
+        rec['pkgs'] or 0,
+        rec['selected_pkgs'] or 0,
         float(rec['selected_pkgs'] or 0)/float(rec['pkgs']) * 100,
         rec['total_build_time'] or 0,
         rec['selected_total_build_time'] or None,
