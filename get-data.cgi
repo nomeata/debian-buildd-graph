@@ -39,9 +39,8 @@ form = cgi.FieldStorage()
 pkgs_raw = form.getfirst('p', DEFAULT_P).replace(',',' ').split()
 
 def abort(s):
-    print 'Content-Type: application/json'
-    print
-    print json.dumps({'error': s})
+    sys.stdout.write('Content-Type: application/json\n\n')
+    sys.stdout.write(json.dumps({'error': s}))
     sys.exit(0)
 
 # Replace e-mail addresses by packages
@@ -108,12 +107,12 @@ for rec in cur:
         rec['selected_total_build_time'] or None,
         float(rec['selected_total_build_time'] or 0)/float(rec['total_build_time'] or 1) * 100,         ])
 
-print 'Content-Type: application/json\n\n'
-print json.dumps({
+sys.stdout.write('Content-Type: application/json\n\n')
+sys.stdout.write(json.dumps({
     'arch':     arch,
     'p_query':  form.getfirst('p',DEFAULT_P),
     'n_pkg':    len(pkgs),
     'n_pkg_s':  "" if len(pkgs) == 1 else "s",
     'pkg_list': pkg_list,
     'data': d_data,
-})
+}))
