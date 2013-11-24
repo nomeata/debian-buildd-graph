@@ -39,7 +39,8 @@ form = cgi.FieldStorage()
 pkgs_raw = form.getfirst('p', DEFAULT_P).replace(',',' ').split()
 
 def abort(s):
-    print 'Content-Type: application/json\n\n'
+    print 'Content-Type: application/json'
+    print
     print json.dumps({'error': s})
     sys.exit(0)
 
