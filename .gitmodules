@@ -1,6 +1,6 @@
 [submodule "flot"]
 	path = flot
-	url = git@github.com:flot/flot.git
+	url = git://github.com/flot/flot.git
 [submodule "blockui"]
 	path = blockui
-	url = git@github.com:malsup/blockui.git
+	url = git://github.com/malsup/blockui.git
