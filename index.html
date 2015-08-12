@@ -38,6 +38,11 @@
 <script language="javascript" type="text/javascript" src="flot/jquery.flot.selection.js"></script>
 <script language="javascript" type="text/javascript" src="blockui/jquery.blockUI.js"></script>
 <script type="text/javascript">
+var settings = {
+	f: null,
+	t: null
+};
+
 function percFormatter(perc, axis) {
     return perc.toFixed(axis.tickDecimals) + "%";
 }
@@ -302,13 +307,19 @@ function setup(data) {
 	function setRangeFromNow(days) {
 	    var now = new Date().getTime();
 	    var then = now - 1000*60*60*24*days;
+		settings.f = then;
+		settings.t = now;
 	    setRange({xaxis:{from: then, to: now}});
 	}
 
-	$("#lastweek").click(function(){setRangeFromNow(7)});
-	$("#lastmonth").click(function(){setRangeFromNow(31)});
-	$("#lastyear").click(function(){setRangeFromNow(266)});
-	setRangeFromNow(7);
+	$("#lastweek").click(function(){setRangeFromNow(7); updateHash()});
+	$("#lastmonth").click(function(){setRangeFromNow(31); updateHash()});
+	$("#lastyear").click(function(){setRangeFromNow(266); updateHash()});
+	if (settings.f && settings.t) {
+		setRange({xaxis:{from: settings.f, to: settings.t}});
+	} else {
+		setRangeFromNow(7);
+	}
 
 	function checkPerc(){ 
 	    d[2].lines.lineWidth = ($("#toggle-perc").is(':checked')? 1 : 0);
@@ -334,8 +345,13 @@ function setup(data) {
 	$("input[name='a']").val(data['arch']);
 	$("input[name='p']").val(data['p_query']);
 
-	href =  "#p=" + encodeURIComponent(data['p_query']);
-	href += ";a=" + encodeURIComponent(data['arch']);
+	updateHash();
+}
+function updateHash() {
+	href =  "#p=" + encodeURIComponent($("input[name='p']").val());
+	href += ";a=" + encodeURIComponent($("input[name='a']").val());
+	href += ";f=" + settings.f;
+	href += ";t=" + settings.t;
 	window.location.hash = href;
 }
 function loadData(){
@@ -347,7 +363,7 @@ function loadData(){
 	},
 	success: function(data) {
 	    if (data['error']) {
-	    	alert(data['error'])
+			alert(data['error'])
 	    } else {
 	        setup(data)
             }
@@ -365,6 +381,12 @@ function parseHash() {
 	}
 	if (queryString['a']) {
 		$("input[name='a']").val(queryString['a'])
+	}
+	if (queryString['f']) {
+		settings.f = queryString['f'];
+	}
+	if (queryString['t']) {
+		settings.t = queryString['t'];
 	}
 }
 $(function() {
