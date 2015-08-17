@@ -306,7 +306,7 @@ var buildtime_perc=column(6);
 	});
 
 	function setRangeFromNow(days){
-	var now=newDate().getTime();
+	var now=new Date().getTime();
 	var then=now-1000*60*60*24*days;
 		settings.f=then;
 		settings.t=now;
@@ -430,7 +430,7 @@ $("input[name='a']").on('keyup',function (e){
 	if (e.keyCode===13){$('#reload').click();}
 });
 $(document)
-	.ajaxStart(function (){$.blockUI({message:"Loading data..."})})
+	.ajaxStart(function (){$.blockUI({message:"Loading data (can take a while)..."})})
 	.ajaxStop($.unblockUI);
 
 loadData();
@@ -463,7 +463,7 @@ Improvements are welcome, especially with regard to the HTML styling.
 
 <h3>Configure</h3>
 <input name="p" value="pkg-haskell-maintainers@lists.alioth.debian.org" title="Enter package names or maintainer e-mail addresses, separated by spaces or commas." style="width:100%"/><br/>
-<input name="a" value="i386" title="Select architecture" size="10"/>&nbsp;<input id="reload" value="Reload" type="submit"/>
+<input name="a" placeholder="i386,amd64,armel,..." value="i386" title="Select one or more architectures" size="20"/>&nbsp;<input id="reload" value="Reload" type="submit"/>
 
 
 <h3>Control</h3>

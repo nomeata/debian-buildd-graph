@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# (c) 2013 Joachim Breitner
+# (c) 2013-2015 Joachim Breitner
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -65,35 +65,40 @@ else:
     pkg_list = ",".join(pkg_list)
 
 # Read arch from user
-arch = form.getfirst('a',DEFAULT_A)
-if not re.match('^[-0-9a-zA-Z]+$', arch):
-    abort("Invalid architecture %s selected" % arch)
+arch = form.getfirst('a','')
+arches = []
+for a in re.split(r', *| +',arch):
+    if re.match('^ *$', a):
+        continue
+    if not re.match('^[-0-9a-zA-Z]+$', a):
+        abort("Invalid architecture %s selected" % a)
+    arches.append(a)
 
 QUERY = '''
-	WITH allp AS (
-		SELECT COUNT(*) as pkgs,
-		       timestamp :: date AS day,
+        WITH allp AS (
+                SELECT COUNT(*) as pkgs,
+                       timestamp :: date AS day,
                        sum(build_time) as total_build_time
-		FROM pkg_history_public
+                FROM pkg_history_public
                 WHERE timestamp > '2010-01-01'
-                  AND architecture = %(arch)s
-		GROUP BY day
-		ORDER BY day
-	), selected as (
-		SELECT COUNT(*) as selected_pkgs,
-		       timestamp :: date AS day,
-		       sum(build_time) as selected_total_build_time
-		FROM pkg_history_public
-		WHERE package IN %(pkgs)s
+                  AND (%(any_arch)s OR architecture = ANY(%(arches)s))
+                GROUP BY day
+                ORDER BY day
+        ), selected as (
+                SELECT COUNT(*) as selected_pkgs,
+                       timestamp :: date AS day,
+                       sum(build_time) as selected_total_build_time
+                FROM pkg_history_public
+                WHERE package IN %(pkgs)s
                   AND timestamp > '2010-01-01'
-                  AND architecture = %(arch)s
-		GROUP BY day
-		ORDER BY day
-	)
-	SELECT *
-	FROM allp FULL OUTER JOIN selected USING (day);'''
+                  AND (%(any_arch)s OR architecture = ANY(%(arches)s))
+                GROUP BY day
+                ORDER BY day
+        )
+        SELECT *
+        FROM allp FULL OUTER JOIN selected USING (day);'''
 
-cur.execute(QUERY, {'pkgs': tuple(pkgs), 'arch' : arch })
+cur.execute(QUERY, {'pkgs': tuple(pkgs), 'arches' : arches, 'any_arch': not(arches)})
 
 d_data = []
 for rec in cur:
